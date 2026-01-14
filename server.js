@@ -33,6 +33,8 @@ wss.on("connection", (ws) => {
 
     // JOIN ROOM
     if (data.type === "join") {
+      const clientID = Math.random().toString(36).substring(2, 8);
+      ws.id = clientID;
       ws.room = data.room;
       ws.role = data.role;
 
@@ -57,6 +59,7 @@ wss.on("connection", (ws) => {
           JSON.stringify({
             type: "control",
             action: data.action,
+            id: ws.id,
           })
         );
       }

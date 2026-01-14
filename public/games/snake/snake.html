@@ -1,149 +1,290 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<title>Coming Soon</title>
+    <meta charset="UTF-8" />
+    <title>Snake</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
-<style>
-* {
-  box-sizing: border-box;
-}
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-body {
-  margin: 0;
-  height: 100vh;
-  font-family: "Poppins", sans-serif;
-  color: white;
-  overflow: hidden;
-}
+        body {
+            margin: 0;
+            height: 100vh;
+            background: radial-gradient(circle at top, #020617, #000);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Poppins", sans-serif;
+            color: white;
+            overflow: hidden;
+        }
 
-/* ---------- BACKGROUND ---------- */
-.bg {
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(circle at top, #1e293b, #020617),
-    linear-gradient(120deg, rgba(34,197,94,0.15), rgba(59,130,246,0.15));
-  animation: bgMove 12s infinite alternate;
-}
+        .layout {
+            display: flex;
+            gap: 60px;
+            align-items: center;
+        }
 
-@keyframes bgMove {
-  from { filter: hue-rotate(0deg); }
-  to   { filter: hue-rotate(40deg); }
-}
+        /* ---------- GAME ---------- */
+        .game {
+            text-align: center;
+        }
 
-/* ---------- CONTAINER ---------- */
-.container {
-  position: relative;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  z-index: 1;
-}
+        h1 {
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px #22c55e;
+        }
 
-/* ---------- TITLE ---------- */
-.title {
-  font-size: 72px;
-  font-weight: 900;
-  letter-spacing: 6px;
-  text-shadow:
-    0 0 20px rgba(34,197,94,0.8),
-    0 20px 60px rgba(0,0,0,0.8);
-  animation: glow 2.5s infinite alternate;
-}
+        .score {
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
 
-@keyframes glow {
-  from { text-shadow: 0 0 10px rgba(34,197,94,0.4); }
-  to   { text-shadow: 0 0 30px rgba(34,197,94,0.9); }
-}
+        canvas {
+            background: #020617;
+            border-radius: 20px;
+            box-shadow:
+                0 0 40px rgba(34, 197, 94, 0.4),
+                inset 0 0 30px rgba(0, 0, 0, 0.8);
+        }
 
-/* ---------- SUBTEXT ---------- */
-.subtitle {
-  margin-top: 20px;
-  font-size: 20px;
-  opacity: 0.85;
-}
+        /* ---------- QR ---------- */
+        .qr {
+            text-align: center;
+        }
 
-/* ---------- SEPARATOR ---------- */
-.line {
-  margin: 40px 0;
-  width: 120px;
-  height: 4px;
-  background: linear-gradient(90deg, transparent, #22c55e, transparent);
-}
+        #qrcode {
+            background: white;
+            padding: 12px;
+            border-radius: 14px;
+            display: inline-block;
+        }
 
-/* ---------- MESSAGE ---------- */
-.message {
-  font-size: 18px;
-  max-width: 600px;
-  opacity: 0.75;
-  line-height: 1.6;
-}
+        .room {
+            margin-top: 10px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
 
-/* ---------- LOADING BAR ---------- */
-.loader {
-  margin-top: 50px;
-  width: 260px;
-  height: 10px;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.1);
-  overflow: hidden;
-}
+        /* ---------- OVERLAY ---------- */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            font-size: 22px;
+            z-index: 10;
+        }
 
-.loader span {
-  display: block;
-  height: 100%;
-  width: 40%;
-  background: linear-gradient(90deg, #22c55e, #3b82f6);
-  animation: load 2s infinite;
-}
-
-@keyframes load {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(250%); }
-}
-
-/* ---------- FOOTER ---------- */
-.footer {
-  position: absolute;
-  bottom: 30px;
-  font-size: 14px;
-  opacity: 0.6;
-}
-</style>
+        .overlay button {
+            padding: 12px 30px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="bg"></div>
+    <div class="layout">
 
-<div class="container">
+        <!-- GAME -->
+        <div class="game">
+            <h1>SNAKE</h1>
+            <div class="score">Score: <span id="score">0</span></div>
+            <canvas id="canvas" width="400" height="400"></canvas>
+        </div>
 
-  <div class="title">COMING SOON</div>
+        <!-- QR -->
+        <div class="qr">
+            <h3>Scan to Join</h3>
+            <div id="qrcode"></div>
+            <div class="room">Room: <span id="roomText"></span></div>
+        </div>
 
-  <div class="subtitle">🚀 New game is loading…</div>
+    </div>
 
-  <div class="line"></div>
+    <div class="overlay" id="overlay">
+        <div>💥 GAME OVER</div>
+        <button onclick="restart()">Restart</button>
+    </div>
 
-  <div class="message">
-    We’re crafting something awesome for your Game Hub.<br>
-    Multiplayer ready. Controller friendly. Big-screen fun.
-  </div>
+    <script>
+        /* ---------- ROOM + WS ---------- */
+        let hasPlayer = false;
 
-  <div class="loader">
-    <span></span>
-  </div>
+        const room = Math.random().toString(36).substring(2, 8);
+        document.getElementById("roomText").textContent = room;
 
-  <div class="footer">
-    © Game Hub · Stay Tuned
-  </div>
+        const protocol = location.protocol === "https:" ? "wss" : "ws";
+        const ws = new WebSocket(`${protocol}://${location.host}`);
 
-</div>
+        ws.onopen = () => {
+            ws.send(JSON.stringify({
+                type: "join",
+                room,
+                role: "host",
+                game: "snake"
+            }));
+        };
+
+        ws.onmessage = (e) => {
+
+            if (!hasPlayer){
+                hasPlayer = true;
+                startGame();
+            }
+            const data = JSON.parse(e.data);
+            if (data.type === "control") {
+                handleAction(data.action);
+            }
+        };
+
+        /* ---------- QR URL (AUTO LOCAL / PROD SAFE) ---------- */
+        function getJoinUrl() {
+            if (location.hostname === "localhost") {
+                return fetch("/server-ip")
+                    .then(r => r.json())
+                    .then(d => `http://${d.ip}:3000/controller/controller.html?room=${room}`);
+            }
+            return Promise.resolve(
+                `${location.origin}/controller/controller.html?room=${room}`
+            );
+        }
+
+        getJoinUrl().then(url => {
+            new QRCode(document.getElementById("qrcode"), {
+                text: url,
+                width: 180,
+                height: 180
+            });
+        });
+
+        /* ---------- GAME LOGIC ---------- */
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        const SIZE = 20;
+        const COLS = canvas.width / SIZE;
+        const ROWS = canvas.height / SIZE;
+
+        let snake, dir, food, score, loop, gameOver;
+
+        function init() {
+            snake = [{ x: 10, y: 10 }];
+            dir = { x: 1, y: 0 };
+            food = spawnFood();
+            score = 0;
+            gameOver = false;
+
+            document.getElementById("score").textContent = score;
+            document.getElementById("overlay").style.display = "none";
+
+            clearInterval(loop);
+            loop = null; // wait for player
+            hasPlayer = false;
+
+        }
+
+        function startGame() {
+            if (loop) return; // already running
+
+            loop = setInterval(tick, 120);
+            }
+
+
+        function spawnFood() {
+            return {
+                x: Math.floor(Math.random() * COLS),
+                y: Math.floor(Math.random() * ROWS)
+            };
+        }
+
+        function handleAction(action) {
+            if (action === "up" && dir.y !== 1) dir = { x: 0, y: -1 };
+            if (action === "down" && dir.y !== -1) dir = { x: 0, y: 1 };
+            if (action === "left" && dir.x !== 1) dir = { x: -1, y: 0 };
+            if (action === "right" && dir.x !== -1) dir = { x: 1, y: 0 };
+        }
+
+        function tick() {
+            if (gameOver) return;
+
+            const head = {
+                x: snake[0].x + dir.x,
+                y: snake[0].y + dir.y
+            };
+
+            if (
+                head.x < 0 || head.y < 0 ||
+                head.x >= COLS || head.y >= ROWS ||
+                snake.some(s => s.x === head.x && s.y === head.y)
+            ) {
+                endGame();
+                return;
+            }
+
+            snake.unshift(head);
+
+            if (head.x === food.x && head.y === food.y) {
+                score++;
+                document.getElementById("score").textContent = score;
+                food = spawnFood();
+            } else {
+                snake.pop();
+            }
+
+            render();
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Food
+            ctx.fillStyle = "#ef4444";
+            ctx.shadowColor = "#ef4444";
+            ctx.shadowBlur = 15;
+            ctx.fillRect(food.x * SIZE, food.y * SIZE, SIZE, SIZE);
+
+            // Snake
+            snake.forEach((s, i) => {
+                ctx.fillStyle = i === 0 ? "#22c55e" : "#16a34a";
+                ctx.shadowColor = "#22c55e";
+                ctx.shadowBlur = i === 0 ? 20 : 10;
+                ctx.fillRect(s.x * SIZE, s.y * SIZE, SIZE, SIZE);
+            });
+
+            ctx.shadowBlur = 0;
+        }
+
+        function endGame() {
+            gameOver = true;
+            clearInterval(loop);
+            document.getElementById("overlay").style.display = "flex";
+        }
+
+        function restart() {
+            init();
+        }
+
+        init();
+    </script>
 
 </body>
+
 </html>

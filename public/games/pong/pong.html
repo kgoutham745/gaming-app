@@ -1,149 +1,273 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<title>Coming Soon</title>
+    <meta charset="UTF-8" />
+    <title>Pong</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
-<style>
-* {
-  box-sizing: border-box;
-}
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-body {
-  margin: 0;
-  height: 100vh;
-  font-family: "Poppins", sans-serif;
-  color: white;
-  overflow: hidden;
-}
+        body {
+            margin: 0;
+            height: 100vh;
+            background: radial-gradient(circle at top, #020617, #000);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Poppins", sans-serif;
+            color: white;
+        }
 
-/* ---------- BACKGROUND ---------- */
-.bg {
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(circle at top, #1e293b, #020617),
-    linear-gradient(120deg, rgba(34,197,94,0.15), rgba(59,130,246,0.15));
-  animation: bgMove 12s infinite alternate;
-}
+        .layout {
+            display: flex;
+            gap: 60px;
+            align-items: center;
+        }
 
-@keyframes bgMove {
-  from { filter: hue-rotate(0deg); }
-  to   { filter: hue-rotate(40deg); }
-}
+        canvas {
+            background: #020617;
+            border-radius: 20px;
+            box-shadow:
+                0 0 40px rgba(59, 130, 246, 0.5),
+                inset 0 0 30px rgba(0, 0, 0, 0.8);
+        }
 
-/* ---------- CONTAINER ---------- */
-.container {
-  position: relative;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  z-index: 1;
-}
+        /* ---------- QR ---------- */
+        .qr {
+            text-align: center;
+        }
 
-/* ---------- TITLE ---------- */
-.title {
-  font-size: 72px;
-  font-weight: 900;
-  letter-spacing: 6px;
-  text-shadow:
-    0 0 20px rgba(34,197,94,0.8),
-    0 20px 60px rgba(0,0,0,0.8);
-  animation: glow 2.5s infinite alternate;
-}
+        #qrcode {
+            background: white;
+            padding: 12px;
+            border-radius: 14px;
+            display: inline-block;
+        }
 
-@keyframes glow {
-  from { text-shadow: 0 0 10px rgba(34,197,94,0.4); }
-  to   { text-shadow: 0 0 30px rgba(34,197,94,0.9); }
-}
+        .room {
+            margin-top: 10px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
 
-/* ---------- SUBTEXT ---------- */
-.subtitle {
-  margin-top: 20px;
-  font-size: 20px;
-  opacity: 0.85;
-}
+        /* ---------- OVERLAY ---------- */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            font-size: 22px;
+            z-index: 10;
+        }
 
-/* ---------- SEPARATOR ---------- */
-.line {
-  margin: 40px 0;
-  width: 120px;
-  height: 4px;
-  background: linear-gradient(90deg, transparent, #22c55e, transparent);
-}
+        .hidden {
+            display: none;
+        }
 
-/* ---------- MESSAGE ---------- */
-.message {
-  font-size: 18px;
-  max-width: 600px;
-  opacity: 0.75;
-  line-height: 1.6;
-}
-
-/* ---------- LOADING BAR ---------- */
-.loader {
-  margin-top: 50px;
-  width: 260px;
-  height: 10px;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.1);
-  overflow: hidden;
-}
-
-.loader span {
-  display: block;
-  height: 100%;
-  width: 40%;
-  background: linear-gradient(90deg, #22c55e, #3b82f6);
-  animation: load 2s infinite;
-}
-
-@keyframes load {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(250%); }
-}
-
-/* ---------- FOOTER ---------- */
-.footer {
-  position: absolute;
-  bottom: 30px;
-  font-size: 14px;
-  opacity: 0.6;
-}
-</style>
+        .overlay button {
+            padding: 12px 30px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="bg"></div>
+    <div class="layout">
 
-<div class="container">
+        <!-- GAME -->
+        <div>
+            <h1>PONG</h1>
+            <canvas id="canvas" width="600" height="400"></canvas>
+        </div>
 
-  <div class="title">COMING SOON</div>
+        <!-- QR -->
+        <div class="qr">
+            <h3>Scan to Join</h3>
+            <div id="qrcode"></div>
+            <div class="room">Room: <span id="roomText"></span></div>
+        </div>
 
-  <div class="subtitle">🚀 New game is loading…</div>
+    </div>
 
-  <div class="line"></div>
+    <div class="overlay" id="overlay">
+        <div id="status">Waiting for players…</div>
+        <button onclick="resetGame()">Reset Room</button>
+    </div>
 
-  <div class="message">
-    We’re crafting something awesome for your Game Hub.<br>
-    Multiplayer ready. Controller friendly. Big-screen fun.
-  </div>
+    <script>
+        /* ---------- ROOM + WS ---------- */
+        const room = Math.random().toString(36).substring(2, 8);
+        document.getElementById("roomText").textContent = room;
 
-  <div class="loader">
-    <span></span>
-  </div>
+        const protocol = location.protocol === "https:" ? "wss" : "ws";
+        const ws = new WebSocket(`${protocol}://${location.host}`);
 
-  <div class="footer">
-    © Game Hub · Stay Tuned
-  </div>
+        let players = new Set();
+        let gameRunning = false;
 
-</div>
+        ws.onopen = () => {
+            ws.send(JSON.stringify({
+                type: "join",
+                room,
+                role: "host",
+                game: "pong"
+            }));
+        };
+
+        ws.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+
+            if (data.type === "control") {
+                if(players.size < 2){
+                    players.add(data.id);
+                    document.getElementById("status").textContent =
+                        `Players joined: ${players.size}/2`;
+                    if (players.size === 2 && !gameRunning) {
+                        startGame();
+                    }
+                }
+            }
+
+            if (data.type === "control" && gameRunning) {
+                handleAction(data.action, data.id);
+            }
+        };
+
+        /* ---------- QR URL ---------- */
+        function getJoinUrl() {
+            if (location.hostname === "localhost") {
+                return fetch("/server-ip")
+                    .then(r => r.json())
+                    .then(d => `http://${d.ip}:3000/controller/controller.html?room=${room}`);
+            }
+            return Promise.resolve(
+                `${location.origin}/controller/controller.html?room=${room}`
+            );
+        }
+
+        getJoinUrl().then(url => {
+            new QRCode(document.getElementById("qrcode"), {
+                text: url,
+                width: 180,
+                height: 180
+            });
+        });
+
+        /* ---------- GAME ---------- */
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        const paddleH = 80;
+        const paddleW = 10;
+        const speed = 20;
+
+        let leftY = 160;
+        let rightY = 160;
+
+        let ball = {
+            x: 300, y: 200,
+            vx: 2, vy: 1
+        };
+
+        let loop;
+
+        function startGame() {
+            document.getElementById("overlay").classList.add("hidden");
+            gameRunning = true;
+            loop = setInterval(tick, 16);
+        }
+
+        function handleAction(action, playerID) {
+            let index = 0;
+            for (const value of players) {
+                if (value == playerID){
+                    break;
+                }
+                index++;
+            }
+            if (index === 0) {
+                if (action === "up") leftY -= speed;
+                if (action === "down") leftY += speed;
+            }
+            if (index === 1) {
+                if (action === "up") rightY -= speed;
+                if (action === "down") rightY += speed;
+            }
+        }
+
+        function tick() {
+            ball.x += ball.vx;
+            ball.y += ball.vy;
+
+            if (ball.y < 0 || ball.y > canvas.height) ball.vy *= -1;
+
+            // Left paddle
+            if (
+                ball.x < 20 &&
+                ball.y > leftY &&
+                ball.y < leftY + paddleH
+            ) ball.vx *= -1;
+
+            // Right paddle
+            if (
+                ball.x > canvas.width - 20 &&
+                ball.y > rightY &&
+                ball.y < rightY + paddleH
+            ) ball.vx *= -1;
+
+            // Reset ball
+            if (ball.x < 0 || ball.x > canvas.width) {
+                ball.x = canvas.width / 2;
+                ball.y = canvas.height / 2;
+            }
+
+            render();
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Middle line
+            ctx.strokeStyle = "rgba(255,255,255,0.2)";
+            ctx.setLineDash([10, 10]);
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Paddles
+            ctx.fillStyle = "#3b82f6";
+            ctx.fillRect(10, leftY, paddleW, paddleH);
+            ctx.fillRect(canvas.width - 20, rightY, paddleW, paddleH);
+
+            // Ball
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, 8, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function resetGame() {
+            location.reload();
+        }
+    </script>
 
 </body>
+
 </html>
