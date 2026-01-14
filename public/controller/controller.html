@@ -3,6 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport"
+      content="width=device-width, initial-scale=1.0,
+               maximum-scale=1.0, user-scalable=no">
+
     <title>Controller</title>
     <link rel="icon" href="data:image/svg+xml,
         <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
@@ -14,41 +18,44 @@
 
 <body>
     <div class=cable></div>
-    <div class=controller>
-        <div class=centerBlue>
-            <div class=centerLeft></div>
-            <div class=centerRight></div>
-        </div>
-        <div class=centerStart>
-            <div class=SLeft></div>
-            <div class=SRight></div>
-        </div>
-        <div class=centerSelect>
-            <div class=SLeft></div>
-            <div class=SRight></div>
-        </div>
-
-        <div class=controllerLeft>
-            <div class=circle></div>
-            <div class=crossCenter>
-                <div class=crossTop onclick="send('up')"></div>
-                <div class=crossBottom onclick="send('down')"></div>
-                <div class=crossLeft onclick="send('left')"></div>
-                <div class=crossRight onclick="send('right')"></div>
-                <div class=crossCircle onclick="send('select')"></div>
+    <div class="controller-wrapper">
+        <div class=controller>
+            <div class=centerBlue>
+                <div class=centerLeft></div>
+                <div class=centerRight></div>
             </div>
-        </div>
-        <div class=controllerRight>
-            <div class=backButton1Center>
-                <div class=cornerLeft1></div>
-                <div class=cornerRight1></div>
+            <div class=centerStart>
+                <div class=SLeft></div>
+                <div class=SRight></div>
             </div>
-            <div class=backButton2Center>
-                <div class=cornerLeft2></div>
-                <div class=cornerRight2></div>
+            <div class=centerSelect>
+                <div class=SLeft></div>
+                <div class=SRight></div>
+            </div>
+    
+            <div class=controllerLeft>
+                <div class=circle></div>
+                <div class=crossCenter>
+                    <div class=crossTop onclick="send('up')"></div>
+                    <div class=crossBottom onclick="send('down')"></div>
+                    <div class=crossLeft onclick="send('left')"></div>
+                    <div class=crossRight onclick="send('right')"></div>
+                    <div class=crossCircle onclick="send('select')"></div>
+                </div>
+            </div>
+            <div class=controllerRight>
+                <div class=backButton1Center>
+                    <div class=cornerLeft1></div>
+                    <div class=cornerRight1></div>
+                </div>
+                <div class=backButton2Center>
+                    <div class=cornerLeft2></div>
+                    <div class=cornerRight2></div>
+                </div>
             </div>
         </div>
     </div>
+    
 </body>
 <script>
     function press(el) {
