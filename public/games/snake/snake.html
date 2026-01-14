@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Coming Soon</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: "Poppins", sans-serif;
+  color: white;
+  overflow: hidden;
+}
+
+/* ---------- BACKGROUND ---------- */
+.bg {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at top, #1e293b, #020617),
+    linear-gradient(120deg, rgba(34,197,94,0.15), rgba(59,130,246,0.15));
+  animation: bgMove 12s infinite alternate;
+}
+
+@keyframes bgMove {
+  from { filter: hue-rotate(0deg); }
+  to   { filter: hue-rotate(40deg); }
+}
+
+/* ---------- CONTAINER ---------- */
+.container {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  z-index: 1;
+}
+
+/* ---------- TITLE ---------- */
+.title {
+  font-size: 72px;
+  font-weight: 900;
+  letter-spacing: 6px;
+  text-shadow:
+    0 0 20px rgba(34,197,94,0.8),
+    0 20px 60px rgba(0,0,0,0.8);
+  animation: glow 2.5s infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 10px rgba(34,197,94,0.4); }
+  to   { text-shadow: 0 0 30px rgba(34,197,94,0.9); }
+}
+
+/* ---------- SUBTEXT ---------- */
+.subtitle {
+  margin-top: 20px;
+  font-size: 20px;
+  opacity: 0.85;
+}
+
+/* ---------- SEPARATOR ---------- */
+.line {
+  margin: 40px 0;
+  width: 120px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #22c55e, transparent);
+}
+
+/* ---------- MESSAGE ---------- */
+.message {
+  font-size: 18px;
+  max-width: 600px;
+  opacity: 0.75;
+  line-height: 1.6;
+}
+
+/* ---------- LOADING BAR ---------- */
+.loader {
+  margin-top: 50px;
+  width: 260px;
+  height: 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.1);
+  overflow: hidden;
+}
+
+.loader span {
+  display: block;
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(90deg, #22c55e, #3b82f6);
+  animation: load 2s infinite;
+}
+
+@keyframes load {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+/* ---------- FOOTER ---------- */
+.footer {
+  position: absolute;
+  bottom: 30px;
+  font-size: 14px;
+  opacity: 0.6;
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<div class="container">
+
+  <div class="title">COMING SOON</div>
+
+  <div class="subtitle">🚀 New game is loading…</div>
+
+  <div class="line"></div>
+
+  <div class="message">
+    We’re crafting something awesome for your Game Hub.<br>
+    Multiplayer ready. Controller friendly. Big-screen fun.
+  </div>
+
+  <div class="loader">
+    <span></span>
+  </div>
+
+  <div class="footer">
+    © Game Hub · Stay Tuned
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Controller</title>
+    <link rel="stylesheet" type="text/css" href="controller.css">
+</head>
+
+<body>
+    <div class=cable></div>
+    <div class=controller>
+        <div class=centerBlue>
+            <div class=centerLeft></div>
+            <div class=centerRight></div>
+        </div>
+        <div class=centerStart>
+            <div class=SLeft></div>
+            <div class=SRight></div>
+        </div>
+        <div class=centerSelect>
+            <div class=SLeft></div>
+            <div class=SRight></div>
+        </div>
+
+        <div class=controllerLeft>
+            <div class=circle></div>
+            <div class=crossCenter>
+                <div class=crossTop onclick="send('up')"></div>
+                <div class=crossBottom onclick="send('down')"></div>
+                <div class=crossLeft onclick="send('left')"></div>
+                <div class=crossRight onclick="send('right')"></div>
+                <div class=crossCircle onclick="send('select')"></div>
+            </div>
+        </div>
+        <div class=controllerRight>
+            <div class=backButton1Center>
+                <div class=cornerLeft1></div>
+                <div class=cornerRight1></div>
+            </div>
+            <div class=backButton2Center>
+                <div class=cornerLeft2></div>
+                <div class=cornerRight2></div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function press(el) {
+        el.classList.add("pressed");
+        setTimeout(() => el.classList.remove("pressed"), 120);
+    }
+
+    // Face buttons
+    document.querySelectorAll(
+        ".cornerLeft1, .cornerRight1, .cornerLeft2, .cornerRight2"
+    ).forEach(btn => {
+        btn.addEventListener("mousedown", () => press(btn));
+        btn.addEventListener("touchstart", () => press(btn));
+    });
+
+    // D-pad
+    document.querySelectorAll(
+        ".crossTop, .crossBottom, .crossLeft, .crossRight, .crossCircle"
+    ).forEach(btn => {
+        btn.addEventListener("mousedown", () => press(btn));
+        btn.addEventListener("touchstart", () => press(btn));
+    });
+
+    // Center
+    document.querySelectorAll(
+        ".centerLeft, .centerRight, .SLeft, .SRight"
+    ).forEach(btn => {
+        btn.addEventListener("mousedown", () => press(btn));
+        btn.addEventListener("touchstart", () => press(btn));
+    });
+
+    const params = new URLSearchParams(window.location.search);
+    const room = params.get("room");
+
+    const protocol = location.protocol === "https:" ? "wss" : "ws";
+    const ws = new WebSocket(`${protocol}://${location.host}`);
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify({
+            type: "join",
+            room,
+            role: "controller"
+        }));
+    };
+
+    function send(action) {
+        ws.send(JSON.stringify({
+            type: "control",
+            action
+        }));
+    }
+</script>
+
+</html>

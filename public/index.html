@@ -1,326 +1,248 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Tic Tac Toe – Host</title>
+<meta charset="UTF-8" />
+<title>Game Hub</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      background: radial-gradient(circle at top, #1e1e2f, #0f0f1a);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Poppins', sans-serif;
-      color: white;
-    }
+<style>
+/* ---------- RESET ---------- */
+* {
+  box-sizing: border-box;
+  user-select: none;
+}
 
-    .layout {
-      display: flex;
-      gap: 60px;
-      align-items: center;
-    }
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: "Poppins", sans-serif;
+  color: white;
+  overflow: hidden;
+}
 
-    .board {
-      display: grid;
-      grid-template-columns: repeat(3, 110px);
-      gap: 12px;
-    }
+/* ---------- BACKGROUND ---------- */
+.background {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at top, #1e293b, #020617),
+    linear-gradient(120deg, rgba(34,197,94,0.15), rgba(59,130,246,0.15));
+  animation: bgShift 10s infinite alternate;
+}
 
-    .cell {
-      width: 110px;
-      height: 110px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.08);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 56px;
-      font-weight: 600;
-      transition: 0.2s;
-    }
+@keyframes bgShift {
+  from { filter: hue-rotate(0deg); }
+  to   { filter: hue-rotate(30deg); }
+}
 
-    .cell.x { color: #4da6ff; }
-    .cell.o { color: #ff6ec7; }
+/* ---------- LAYOUT ---------- */
+.container {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 1;
+}
 
-    .selected {
-      box-shadow: 0 0 0 3px white, 0 0 20px white;
-      transform: scale(1.05);
-    }
+/* ---------- TITLE ---------- */
+.title {
+  font-size: 64px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  margin-bottom: 10px;
+  text-shadow: 0 10px 40px rgba(0,0,0,0.6);
+}
 
-    .qr-box {
-      text-align: center;
-    }
+/* ---------- SUBTITLE ---------- */
+.subtitle {
+  font-size: 18px;
+  opacity: 0.8;
+  margin-bottom: 50px;
+  height: 24px;
+  overflow: hidden;
+}
 
-    .qr-box h3 {
-      margin-bottom: 10px;
-    }
+.subtitle span {
+  display: inline-block;
+  animation: slideText 8s infinite;
+}
 
-    #qrcode {
-      background: white;
-      padding: 10px;
-      border-radius: 12px;
-      display: inline-block;
-    }
+@keyframes slideText {
+  0%   { transform: translateY(0); }
+  33%  { transform: translateY(-24px); }
+  66%  { transform: translateY(-48px); }
+  100% { transform: translateY(0); }
+}
 
-    .room {
-      margin-top: 10px;
-      font-size: 14px;
-      opacity: 0.7;
-    }
+/* ---------- SLIDER ---------- */
+.slider-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
 
-    .win {
-        animation: winPulse 0.8s infinite alternate;
-        background: rgba(255,255,255,0.2);
-    }
+.nav {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 48px;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+  opacity: 0.6;
+}
 
-    @keyframes winPulse {
-        from { transform: scale(1); }
-        to { transform: scale(1.1); }
-    }
-    .overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.85);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 20px;
-        z-index: 10;
-        }
+.nav:hover {
+  transform: scale(1.2);
+  opacity: 1;
+}
 
-        .hidden {
-        display: none;
-        }
+/* ---------- GAME CARDS ---------- */
+.slider {
+  display: flex;
+  gap: 40px;
+}
 
-        .overlay h1 {
-        font-size: 42px;
-        }
+.game {
+  width: 220px;
+  height: 280px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 24px;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.4s, box-shadow 0.4s, opacity 0.4s;
+  opacity: 0.5;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
 
-        .overlay button {
-        font-size: 18px;
-        padding: 12px 24px;
-        border-radius: 12px;
-        border: none;
-        cursor: pointer;
-        }
+.game img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 16px;
+}
 
+.game h3 {
+  margin: 15px 0 0;
+  font-size: 22px;
+}
 
-  </style>
+.game p {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.game.active {
+  transform: scale(1.25);
+  opacity: 1;
+  background: rgba(255,255,255,0.2);
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.8),
+    0 0 40px rgba(34,197,94,0.5);
+}
+
+/* ---------- PLAY BUTTON ---------- */
+.play {
+  margin-top: 50px;
+  padding: 16px 60px;
+  font-size: 22px;
+  font-weight: 600;
+  border-radius: 40px;
+  border: none;
+  cursor: pointer;
+  color: white;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.play:hover {
+  transform: scale(1.1);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.9);
+}
+</style>
 </head>
+
 <body>
 
-<div class="layout">
-  <!-- GAME -->
-  <div>
-    <div class="board" id="board"></div>
-    <div id="overlay" class="overlay hidden">
-        <h1 id="overlayText"></h1>
-        <button onclick="newGame()">New Game</button>
-        <button onclick="resetGame()">Reset Room</button>
-    </div>  
+<div class="background"></div>
+
+<div class="container">
+
+  <div class="title">GAME HUB</div>
+
+  <div class="subtitle">
+    <span>
+      Play together on TV & Mobile<br>
+      Scan QR & join instantly<br>
+      Party games made simple
+    </span>
   </div>
 
-  <!-- QR -->
-  <div class="qr-box">
-    <h3>Scan to Join</h3>
-    <div id="qrcode"></div>
-    <div class="room">Room: <span id="roomText"></span></div>
+  <div class="slider-wrapper">
+    <button class="nav" onclick="prev()">◀</button>
+
+    <div class="slider">
+      <div class="game active" data-link="games/tictactoe/tictactoe.html">
+        <img src="assets/tictactoe.png">
+        <h3>Tic Tac Toe</h3>
+        <p>Classic strategy</p>
+      </div>
+
+      <div class="game" data-link="games/snake/snake.html">
+        <img src="assets/snake.png">
+        <h3>Snake</h3>
+        <p>Fast reflex fun</p>
+      </div>
+
+      <div class="game" data-link="games/pong/pong.html">
+        <img src="assets/pong.png">
+        <h3>Pong</h3>
+        <p>Retro arcade</p>
+      </div>
+    </div>
+
+    <button class="nav" onclick="next()">▶</button>
   </div>
+
+  <button class="play" onclick="play()">▶ Play</button>
+
 </div>
 
 <script>
-    const winPatterns = [
-    [0,1,2],[3,4,5],[6,7,8],
-    [0,3,6],[1,4,7],[2,5,8],
-    [0,4,8],[2,4,6]
-    ];
+  const games = document.querySelectorAll(".game");
+  let index = 0;
 
-    let gameOver = false;
-    let winningCells = [];
-    function checkWin() {
-        for (const pattern of winPatterns) {
-            const [a,b,c] = pattern;
-            if (
-            board[a] &&
-            board[a] === board[b] &&
-            board[a] === board[c]
-            ) {
-            winningCells = pattern;
-            return board[a];
-            }
-        }
-        return null;
-        }
-
-    function checkDraw() {
-        return board.every(cell => cell !== "");
-    }
-
-    function showOverlay(text) {
-    document.getElementById("overlayText").textContent = text;
-    document.getElementById("overlay").classList.remove("hidden");
-    }
-
-    function newGame() {
-        board.fill("");
-        cursor = 0;
-        currentPlayer = "X";
-        gameOver = false;
-        winningCells = [];
-        document.getElementById("overlay").classList.add("hidden");
-        render();
-    }
-
-    function resetGame() {
-        location.reload();
-    }
-
-  // Generate room ID
-  const room = Math.random().toString(36).substring(2, 8);
-  document.getElementById("roomText").textContent = room;
-
-  const protocol = location.protocol === "https:" ? "wss" : "ws";
-  const ws = new WebSocket(`${protocol}://${location.host}`);
-  // const ws = new WebSocket(`ws://${location.host}`);
-
-  const board = Array(9).fill("");
-  let cursor = 0;
-  let currentPlayer = "X";
-  const boardEl = document.getElementById("board");
-
-//   function render() {
-//     boardEl.innerHTML = "";
-//     board.forEach((v, i) => {
-//       const c = document.createElement("div");
-//       c.className = "cell";
-//       if (v === "X") c.classList.add("x");
-//       if (v === "O") c.classList.add("o");
-//       if (i === cursor) c.classList.add("selected");
-//       c.textContent = v;
-//       boardEl.appendChild(c);
-//     });
-//   }
-
-    function render() {
-        boardEl.innerHTML = "";
-
-        board.forEach((v, i) => {
-            const c = document.createElement("div");
-            c.className = "cell";
-
-            if (v === "X") c.classList.add("x");
-            if (v === "O") c.classList.add("o");
-
-            if (i === cursor && !gameOver) {
-            c.classList.add("selected");
-            }
-
-            if (winningCells.includes(i)) {
-            c.classList.add("win");
-            }
-
-            c.textContent = v;
-            boardEl.appendChild(c);
-        });
-    }
-
-
-  ws.onopen = () => {
-    ws.send(JSON.stringify({
-      type: "join",
-      room,
-      role: "host"
-    }));
-    render();
-  };
-
-  ws.onmessage = (e) => {
-    const data = JSON.parse(e.data);
-    if (data.type === "control") {
-      if (data.action === "left" && cursor % 3 !== 0) cursor--;
-      if (data.action === "right" && cursor % 3 !== 2) cursor++;
-      if (data.action === "up" && cursor > 2) cursor -= 3;
-      if (data.action === "down" && cursor < 6) cursor += 3;
-    //   if (data.action === "select" && board[cursor] === "") {
-    //     board[cursor] = currentPlayer;
-    //     currentPlayer = currentPlayer === "X" ? "O" : "X";
-    //   }
-    if (data.action === "select" && board[cursor] === "" && !gameOver) {
-        board[cursor] = currentPlayer;
-
-        const winner = checkWin();
-        if (winner) {
-            gameOver = true;
-            showOverlay(`🎉 Player ${winner} Wins!`);
-        } else if (checkDraw()) {
-            gameOver = true;
-            showOverlay("🤝 It's a Draw!");
-        } else {
-            currentPlayer = currentPlayer === "X" ? "O" : "X";
-        }
-        }
-
-      render();
-    }
-  };
-
-  function getJoinUrl(room) {
-    // Local dev
-    if (
-      location.hostname === "localhost" ||
-      location.hostname.startsWith("192.168.")
-    ) {
-      return fetch("/server-ip")
-        .then(res => res.json())
-        .then(data =>
-          `http://${data.ip}:3000/controller.html?room=${room}`
-        );
-    }
-
-    // Production
-    return Promise.resolve(
-      `${location.origin}/controller.html?room=${room}`
-    );
+  function update() {
+    games.forEach((g, i) => {
+      g.classList.toggle("active", i === index);
+    });
   }
 
+  function next() {
+    index = (index + 1) % games.length;
+    update();
+  }
 
-  // Generate QR
-  getJoinUrl(room).then(joinUrl => {
-    new QRCode(document.getElementById("qrcode"), {
-      text: joinUrl,
-      width: 180,
-      height: 180
-    });
+  function prev() {
+    index = (index - 1 + games.length) % games.length;
+    update();
+  }
+
+  function play() {
+    window.location.href = games[index].dataset.link;
+  }
+
+  games.forEach((game, i) => {
+    game.onclick = () => {
+      index = i;
+      update();
+      play();
+    };
   });
-
-  // fetch("/server-ip")
-  // .then(res => res.json())
-  // .then(data => {
-  //   const joinUrl =
-  //     `http://${data.ip}:3000/controller.html?room=${room}`;
-
-  //   new QRCode(document.getElementById("qrcode"), {
-  //     text: joinUrl,
-  //     width: 180,
-  //     height: 180
-  //   });
-  // });
-
-
-//   // Generate QR
-//   const joinUrl =
-//     `http://${location.host}/controller.html?room=${room}`;
-
-//   new QRCode(document.getElementById("qrcode"), {
-//     text: joinUrl,
-//     width: 180,
-//     height: 180
-//   });
 </script>
 
 </body>
