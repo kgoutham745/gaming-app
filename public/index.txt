@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>WebSocket Demo</title>
+</head>
+<body>
+  <h1>WebSocket Connection</h1>
+  <p id="status">Connecting...</p>
+  <button id="sendBtn">Send Message</button>
+
+  <script>
+    const status = document.getElementById("status");
+    const sendBtn = document.getElementById("sendBtn");
+
+    // Connect WebSocket to same host
+    const protocol = location.protocol === "https:" ? "wss" : "ws";
+    const socket = new WebSocket(`${protocol}://${location.host}`);
+    // const socket = new WebSocket(`ws://${window.location.host}`);
+
+    socket.onopen = () => {
+      status.textContent = "Connected to WebSocket";
+      console.log("WebSocket connected");
+    };
+
+    socket.onmessage = (event) => {
+      console.log("Message from server:", event.data);
+    };
+
+    socket.onclose = () => {
+      status.textContent = "Disconnected";
+      console.log("WebSocket disconnected");
+    };
+
+    sendBtn.onclick = () => {
+      socket.send("Hello from browser");
+    };
+  </script>
+</body>
+</html>
