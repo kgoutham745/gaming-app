@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Host</title>
+  <style>
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      gap: 5px;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      font-size: 48px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid black;
+    }
+    .selected {
+      background: lightblue;
+    }
+  </style>
+</head>
+<body>
+  <h2>Host Board</h2>
+  <div class="board" id="board"></div>
+
+  <script>
+    const room = "room1";
+    const ws = new WebSocket(`ws://${location.host}`);
+
+    const board = Array(9).fill("");
+    let cursor = 0;
+    let currentPlayer = "X";
+
+    const boardEl = document.getElementById("board");
+
+    function render() {
+      boardEl.innerHTML = "";
+      board.forEach((v, i) => {
+        const d = document.createElement("div");
+        d.className = "cell" + (i === cursor ? " selected" : "");
+        d.textContent = v;
+        boardEl.appendChild(d);
+      });
+    }
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({
+        type: "join",
+        room,
+        role: "host"
+      }));
+      render();
+    };
+
+    ws.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+
+      if (data.type === "control") {
+        if (data.action === "left" && cursor % 3 !== 0) cursor--;
+        if (data.action === "right" && cursor % 3 !== 2) cursor++;
+        if (data.action === "up" && cursor > 2) cursor -= 3;
+        if (data.action === "down" && cursor < 6) cursor += 3;
+
+        if (data.action === "select" && board[cursor] === "") {
+          board[cursor] = currentPlayer;
+          currentPlayer = currentPlayer === "X" ? "O" : "X";
+        }
+
+        render();
+      }
+    };
+  </script>
+</body>
+</html>

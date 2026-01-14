@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tic Tac Toe – Host</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at top, #1e1e2f, #0f0f1a);
+      font-family: 'Poppins', sans-serif;
+      color: white;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 110px);
+      gap: 12px;
+      margin: auto;
+    }
+
+    .cell {
+      width: 110px;
+      height: 110px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.08);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 56px;
+      font-weight: 600;
+      cursor: default;
+      transition: all 0.2s ease;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.1);
+    }
+
+    .cell.x {
+      color: #4da6ff;
+    }
+
+    .cell.o {
+      color: #ff6ec7;
+    }
+
+    .selected {
+      box-shadow:
+        0 0 0 3px #ffffff,
+        0 0 20px rgba(255,255,255,0.6);
+      transform: scale(1.05);
+    }
+
+    .turn {
+      margin-top: 20px;
+      font-size: 18px;
+      opacity: 0.85;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>HOST BOARD</h2>
+    <div class="board" id="board"></div>
+    <div class="turn" id="turn"></div>
+  </div>
+
+  <script>
+    const room = "room1";
+    const ws = new WebSocket(`ws://${location.host}`);
+
+    const board = Array(9).fill("");
+    let cursor = 0;
+    let currentPlayer = "X";
+
+    const boardEl = document.getElementById("board");
+    const turnEl = document.getElementById("turn");
+
+    function render() {
+      boardEl.innerHTML = "";
+
+      board.forEach((v, i) => {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+
+        if (v === "X") cell.classList.add("x");
+        if (v === "O") cell.classList.add("o");
+        if (i === cursor) cell.classList.add("selected");
+
+        cell.textContent = v;
+        boardEl.appendChild(cell);
+      });
+
+      turnEl.textContent = `Turn: Player ${currentPlayer}`;
+      turnEl.style.color = currentPlayer === "X" ? "#4da6ff" : "#ff6ec7";
+    }
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({
+        type: "join",
+        room,
+        role: "host"
+      }));
+      render();
+    };
+
+    ws.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+
+      if (data.type === "control") {
+        if (data.action === "left" && cursor % 3 !== 0) cursor--;
+        if (data.action === "right" && cursor % 3 !== 2) cursor++;
+        if (data.action === "up" && cursor > 2) cursor -= 3;
+        if (data.action === "down" && cursor < 6) cursor += 3;
+
+        if (data.action === "select" && board[cursor] === "") {
+          board[cursor] = currentPlayer;
+          currentPlayer = currentPlayer === "X" ? "O" : "X";
+        }
+
+        render();
+      }
+    };
+  </script>
+
+</body>
+</html>

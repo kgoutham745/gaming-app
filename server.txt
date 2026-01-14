@@ -1,0 +1,36 @@
+const express = require("express");
+const http = require("http");
+const WebSocket = require("ws");
+const path = require("path");
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+// Serve frontend
+app.use(express.static(path.join(__dirname, "public")));
+
+// WebSocket logic
+wss.on("connection", (ws, req) => {
+  console.log("Client connected via WebSocket");
+
+  // Send a message to the client
+  ws.send(JSON.stringify({ message: "Connected to server" }));
+
+  ws.on("message", (data) => {
+    console.log("Received from client:", data.toString());
+
+    // Echo back
+    ws.send(JSON.stringify({ echo: data.toString() }));
+  });
+
+  ws.on("close", () => {
+    console.log("Client disconnected");
+  });
+});
+
+// Start server
+const PORT = 3000;
+server.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
