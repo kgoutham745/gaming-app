@@ -5,6 +5,10 @@
     <meta charset="UTF-8" />
     <title>Snake</title>
 
+    <link rel="icon" href="data:image/svg+xml,
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
+        <text y='.9em' font-size='90'>🎮</text>
+        </svg>">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
@@ -204,8 +208,8 @@
         function startGame() {
             if (loop) return; // already running
 
-            loop = setInterval(tick, 120);
-            }
+            loop = setInterval(tick, 200);
+        }
 
 
         function spawnFood() {
